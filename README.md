@@ -265,8 +265,7 @@ com.seuprojeto/
 
 - **GitHub**: [@lkeygergamer](https://github.com/lkeygergamer)
 - **Email**: adilsonoliveira.2788@gmail.com
-- **LinkedIn**: [[[Seu LinkedIn]](https://www.linkedin.com/in/aadiilson-oliveira/)](https://www.linkedin.com/in/adilson-oliveira-779490283/)
-
+- **LinkedIn**: https://www.linkedin.com/in/adilson-oliveira-779490283/
 ---
 
 ## 📝 Licença
