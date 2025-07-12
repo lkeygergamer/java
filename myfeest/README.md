@@ -1,4 +1,4 @@
-# �� Blueprint System - Enterprise Edition
+# Blueprint System - Enterprise Edition
 
 Sistema de blueprint visual modular em Java com **integração completa frontend-backend** e **padrões empresariais**.
 
