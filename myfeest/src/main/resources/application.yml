@@ -1,0 +1,139 @@
+spring:
+  application:
+    name: blueprint-system
+  
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+  
+  # Configuração do servidor
+  server:
+    port: ${SERVER_PORT:8081}
+    servlet:
+      context-path: /
+  
+  # Configuração do banco de dados
+  datasource:
+    url: ${DATABASE_URL:jdbc:h2:mem:blueprintdb}
+    username: ${DATABASE_USERNAME:sa}
+    password: ${DATABASE_PASSWORD:}
+    driver-class-name: ${DATABASE_DRIVER:org.h2.Driver}
+  
+  # Configuração JPA
+  jpa:
+    hibernate:
+      ddl-auto: ${JPA_DDL_AUTO:create-drop}
+    show-sql: ${JPA_SHOW_SQL:true}
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: ${HIBERNATE_DIALECT:org.hibernate.dialect.H2Dialect}
+  
+  # Configuração do Redis (Cache)
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      database: ${REDIS_DATABASE:0}
+  
+  # Configuração de segurança
+  security:
+    user:
+      name: ${SECURITY_USER:admin}
+      password: ${SECURITY_PASSWORD:admin123}
+  
+  # Configuração do Jackson
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: America/Sao_Paulo
+    serialization:
+      write-dates-as-timestamps: false
+    deserialization:
+      fail-on-unknown-properties: false
+
+# Configuração do Actuator (Monitoramento)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,env,configprops
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: when-authorized
+      show-components: always
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+  health:
+    redis:
+      enabled: true
+    db:
+      enabled: true
+
+# Configuração do SpringDoc (Documentação da API)
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+  info:
+    title: Blueprint System API
+    description: Sistema de blueprint visual modular em Java
+    version: 1.0.0
+    contact:
+      name: MyFeest Team
+      email: team@myfeest.com
+    license:
+      name: MIT License
+      url: https://opensource.org/licenses/MIT
+
+# Configuração do Blueprint System
+blueprint:
+  engine:
+    timeout: ${BLUEPRINT_TIMEOUT:30000}
+    max-nodes: ${BLUEPRINT_MAX_NODES:1000}
+    enable-logging: ${BLUEPRINT_LOGGING:true}
+    cache-enabled: ${BLUEPRINT_CACHE:true}
+  
+  security:
+    jwt:
+      secret: ${JWT_SECRET:myfeest-blueprint-secret-key-2024}
+      expiration: ${JWT_EXPIRATION:86400000}
+      refresh-expiration: ${JWT_REFRESH_EXPIRATION:604800000}
+  
+  api:
+    rate-limit:
+      enabled: ${RATE_LIMIT_ENABLED:true}
+      requests-per-minute: ${RATE_LIMIT_REQUESTS:100}
+  
+  storage:
+    type: ${STORAGE_TYPE:memory}
+    file:
+      path: ${STORAGE_FILE_PATH:./blueprints}
+    database:
+      enabled: ${STORAGE_DB_ENABLED:true}
+
+# Configuração de logging
+logging:
+  level:
+    com.myfeest.blueprint: ${LOG_LEVEL:INFO}
+    org.springframework.security: ${SECURITY_LOG_LEVEL:WARN}
+    org.hibernate.SQL: ${SQL_LOG_LEVEL:DEBUG}
+    org.hibernate.type.descriptor.sql.BasicBinder: ${SQL_PARAM_LOG_LEVEL:TRACE}
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: ${LOG_FILE:logs/blueprint-system.log}
+    max-size: ${LOG_MAX_SIZE:10MB}
+    max-history: ${LOG_MAX_HISTORY:30}
+
+# Configuração de cache
+cache:
+  redis:
+    default-ttl: ${CACHE_TTL:3600}
+    blueprint-ttl: ${BLUEPRINT_CACHE_TTL:1800} 

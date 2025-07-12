@@ -1,0 +1,74 @@
+# Configuração para ambiente de desenvolvimento
+spring:
+  # Banco de dados H2 em memória para desenvolvimento
+  datasource:
+    url: jdbc:h2:mem:blueprintdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password: 
+    driver-class-name: org.h2.Driver
+  
+  # Console H2 habilitado
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  
+  # JPA com SQL visível
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.H2Dialect
+  
+  # Redis desabilitado em desenvolvimento (usa cache local)
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
+
+# Logging detalhado para desenvolvimento
+logging:
+  level:
+    com.myfeest.blueprint: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+# Configurações do Blueprint para desenvolvimento
+blueprint:
+  engine:
+    timeout: 60000
+    max-nodes: 100
+    enable-logging: true
+    cache-enabled: false
+  
+  security:
+    jwt:
+      secret: dev-secret-key-change-in-production
+      expiration: 86400000
+  
+  api:
+    rate-limit:
+      enabled: false
+      requests-per-minute: 1000
+  
+  storage:
+    type: memory
+    database:
+      enabled: false
+
+# Actuator com mais endpoints expostos
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always 

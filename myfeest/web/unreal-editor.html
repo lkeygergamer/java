@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blueprint Editor - Unreal Style</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1e1e1e;
+            color: #ffffff;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* Header estilo Unreal */
+        .header {
+            background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+            border-bottom: 2px solid #4a4a4a;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 50px;
+        }
+
+        .header h1 {
+            font-size: 1.5em;
+            color: #00d4ff;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            background: #3a3a3a;
+            color: #ffffff;
+            border: 1px solid #5a5a5a;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 12px;
+        }
+
+        .btn:hover {
+            background: #4a4a4a;
+            border-color: #00d4ff;
+        }
+
+        .btn-primary {
+            background: #00d4ff;
+            color: #000;
+            border-color: #00d4ff;
+        }
+
+        .btn-primary:hover {
+            background: #00b8e6;
+        }
+
+        /* Layout principal */
+        .main-container {
+            display: grid;
+            grid-template-columns: 250px 1fr 300px;
+            height: calc(100vh - 50px);
+        }
+
+        /* Painel esquerdo - Paleta de nós */
+        .node-palette {
+            background: #2d2d2d;
+            border-right: 2px solid #4a4a4a;
+            overflow-y: auto;
+            padding: 15px;
+        }
+
+        .palette-section {
+            margin-bottom: 20px;
+        }
+
+        .palette-section h3 {
+            color: #00d4ff;
+            font-size: 14px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #4a4a4a;
+            padding-bottom: 5px;
+        }
+
+        .node-template {
+            background: #3a3a3a;
+            border: 1px solid #5a5a5a;
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 8px;
+            cursor: grab;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .node-template:hover {
+            background: #4a4a4a;
+            border-color: #00d4ff;
+            transform: translateY(-2px);
+        }
+
+        .node-template:active {
+            cursor: grabbing;
+        }
+
+        .node-template .icon {
+            width: 20px;
+            height: 20px;
+            background: #00d4ff;
+            border-radius: 3px;
+            display: inline-block;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        .node-template .name {
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .node-template .description {
+            font-size: 10px;
+            color: #aaa;
+            margin-top: 3px;
+        }
+
+        /* Canvas principal */
+        .canvas-container {
+            background: #1a1a1a;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .canvas {
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 20%, #2a2a2a 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, #2a2a2a 0%, transparent 50%),
+                linear-gradient(45deg, #1a1a1a 25%, transparent 25%),
+                linear-gradient(-45deg, #1a1a1a 25%, transparent 25%);
+            background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+            position: relative;
+        }
+
+        /* Nós no canvas */
+        .node {
+            position: absolute;
+            background: #3a3a3a;
+            border: 2px solid #5a5a5a;
+            border-radius: 8px;
+            min-width: 150px;
+            cursor: move;
+            transition: all 0.3s ease;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .node:hover {
+            border-color: #00d4ff;
+            box-shadow: 0 6px 20px rgba(0, 212, 255, 0.2);
+        }
+
+        .node.selected {
+            border-color: #00d4ff;
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.3);
+        }
+
+        .node-header {
+            background: linear-gradient(135deg, #4a4a4a 0%, #3a3a3a 100%);
+            padding: 8px 12px;
+            border-radius: 6px 6px 0 0;
+            border-bottom: 1px solid #5a5a5a;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .node-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .node-type {
+            font-size: 10px;
+            color: #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        .node-body {
+            padding: 12px;
+        }
+
+        .node-inputs, .node-outputs {
+            margin-bottom: 10px;
+        }
+
+        .node-inputs h4, .node-outputs h4 {
+            font-size: 10px;
+            color: #aaa;
+            margin-bottom: 5px;
+        }
+
+        .pin {
+            width: 12px;
+            height: 12px;
+            background: #00d4ff;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+            cursor: crosshair;
+            position: relative;
+        }
+
+        .pin:hover {
+            background: #00b8e6;
+            transform: scale(1.2);
+        }
+
+        .pin.input {
+            background: #ff6b6b;
+        }
+
+        .pin.output {
+            background: #4ecdc4;
+        }
+
+        .pin-label {
+            font-size: 10px;
+            color: #ccc;
+        }
+
+        /* Conexões */
+        .connection {
+            position: absolute;
+            height: 3px;
+            background: linear-gradient(90deg, #00d4ff, #4ecdc4);
+            z-index: 5;
+            pointer-events: none;
+            border-radius: 2px;
+        }
+
+        .connection::after {
+            content: '';
+            position: absolute;
+            right: -6px;
+            top: -3px;
+            width: 0;
+            height: 0;
+            border-left: 12px solid #4ecdc4;
+            border-top: 6px solid transparent;
+            border-bottom: 6px solid transparent;
+        }
+
+        /* Painel direito - Propriedades */
+        .properties-panel {
+            background: #2d2d2d;
+            border-left: 2px solid #4a4a4a;
+            overflow-y: auto;
+            padding: 15px;
+        }
+
+        .properties-panel h3 {
+            color: #00d4ff;
+            font-size: 14px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #4a4a4a;
+            padding-bottom: 5px;
+        }
+
+        .property-group {
+            margin-bottom: 15px;
+        }
+
+        .property-group label {
+            display: block;
+            font-size: 12px;
+            color: #ccc;
+            margin-bottom: 5px;
+        }
+
+        .property-group input, .property-group select, .property-group textarea {
+            width: 100%;
+            padding: 6px 8px;
+            background: #3a3a3a;
+            border: 1px solid #5a5a5a;
+            border-radius: 4px;
+            color: #ffffff;
+            font-size: 12px;
+        }
+
+        .property-group input:focus, .property-group select:focus, .property-group textarea:focus {
+            outline: none;
+            border-color: #00d4ff;
+        }
+
+        .property-group textarea {
+            height: 60px;
+            resize: vertical;
+        }
+
+        /* Status bar */
+        .status-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #1a1a1a;
+            border-top: 1px solid #4a4a4a;
+            padding: 5px 15px;
+            font-size: 11px;
+            color: #aaa;
+            display: flex;
+            justify-content: space-between;
+            z-index: 1000;
+        }
+
+        /* Modal de execução */
+        .execution-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+        }
+
+        .execution-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #2d2d2d;
+            border: 2px solid #4a4a4a;
+            border-radius: 8px;
+            padding: 20px;
+            min-width: 400px;
+            max-width: 600px;
+        }
+
+        .execution-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #4a4a4a;
+            padding-bottom: 10px;
+        }
+
+        .execution-header h3 {
+            color: #00d4ff;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #aaa;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .execution-result {
+            background: #1a1a1a;
+            border: 1px solid #4a4a4a;
+            border-radius: 4px;
+            padding: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+        }
+
+        /* Animações */
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 212, 255, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 212, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 212, 255, 0); }
+        }
+
+        .node.executing {
+            animation: pulse 2s infinite;
+        }
+
+        /* Responsividade */
+        @media (max-width: 1200px) {
+            .main-container {
+                grid-template-columns: 200px 1fr 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <h1>🎯 Blueprint Editor</h1>
+        <div class="toolbar">
+            <button class="btn" onclick="clearCanvas()">Limpar</button>
+            <button class="btn" onclick="saveBlueprint()">💾 Salvar (API)</button>
+            <button class="btn" onclick="loadBlueprint()">📂 Carregar (API)</button>
+            <button class="btn btn-primary" onclick="executeBlueprint()">🚀 Executar (Java)</button>
+            <button class="btn btn-warning" onclick="getAPIStats()">📊 Stats</button>
+        </div>
+    </div>
+
+    <!-- Layout principal -->
+    <div class="main-container">
+        <!-- Painel esquerdo - Paleta de nós -->
+        <div class="node-palette">
+            <div class="palette-section">
+                <h3>📥 Entrada</h3>
+                <div class="node-template" data-type="input">
+                    <span class="icon"></span>
+                    <div class="name">Input</div>
+                    <div class="description">Dados de entrada</div>
+                </div>
+                <div class="node-template" data-type="text_input">
+                    <span class="icon"></span>
+                    <div class="name">Text Input</div>
+                    <div class="description">Entrada de texto</div>
+                </div>
+            </div>
+
+            <div class="palette-section">
+                <h3>⚙️ Processamento</h3>
+                <div class="node-template" data-type="transform">
+                    <span class="icon"></span>
+                    <div class="name">Transform</div>
+                    <div class="description">Transformar dados</div>
+                </div>
+                <div class="node-template" data-type="filter">
+                    <span class="icon"></span>
+                    <div class="name">Filter</div>
+                    <div class="description">Filtrar dados</div>
+                </div>
+                <div class="node-template" data-type="ai">
+                    <span class="icon"></span>
+                    <div class="name">AI</div>
+                    <div class="description">Processamento com IA</div>
+                </div>
+            </div>
+
+            <div class="palette-section">
+                <h3>🔗 Integração</h3>
+                <div class="node-template" data-type="database">
+                    <span class="icon"></span>
+                    <div class="name">Database</div>
+                    <div class="description">Operações de banco</div>
+                </div>
+                <div class="node-template" data-type="api">
+                    <span class="icon"></span>
+                    <div class="name">API</div>
+                    <div class="description">Chamadas de API</div>
+                </div>
+            </div>
+
+            <div class="palette-section">
+                <h3>📤 Saída</h3>
+                <div class="node-template" data-type="output">
+                    <span class="icon"></span>
+                    <div class="name">Output</div>
+                    <div class="description">Resultado final</div>
+                </div>
+                <div class="node-template" data-type="text_output">
+                    <span class="icon"></span>
+                    <div class="name">Text Output</div>
+                    <div class="description">Saída de texto</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Canvas principal -->
+        <div class="canvas-container">
+            <div class="canvas" id="canvas"></div>
+        </div>
+
+        <!-- Painel direito - Propriedades -->
+        <div class="properties-panel">
+            <h3>⚙️ Propriedades</h3>
+            <div id="properties-content">
+                <p style="color: #666; font-size: 12px;">Selecione um nó para ver suas propriedades</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status bar -->
+    <div class="status-bar">
+        <span id="status">Pronto</span>
+        <span id="node-count">Nós: 0</span>
+        <span id="connection-count">Conexões: 0</span>
+    </div>
+
+    <!-- Modal de execução -->
+    <div class="execution-modal" id="executionModal">
+        <div class="execution-content">
+            <div class="execution-header">
+                <h3>🚀 Execução do Blueprint</h3>
+                <button class="close-btn" onclick="closeExecutionModal()">&times;</button>
+            </div>
+            <div class="execution-result" id="executionResult">
+                Aguardando execução...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Estado global
+        let nodes = [];
+        let connections = [];
+        let selectedNode = null;
+        let isDragging = false;
+        let isConnecting = false;
+        let dragOffset = { x: 0, y: 0 };
+        let nodeCounter = 0;
+        let connectionCounter = 0;
+        let startPin = null;
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCanvas();
+            initializeNodePalette();
+            updateStatus();
+        });
+
+        function initializeCanvas() {
+            const canvas = document.getElementById('canvas');
+            
+            // Event listeners para o canvas
+            canvas.addEventListener('click', function(e) {
+                if (e.target === canvas) {
+                    deselectAll();
+                }
+            });
+
+            canvas.addEventListener('mousemove', function(e) {
+                if (isDragging && selectedNode) {
+                    const rect = canvas.getBoundingClientRect();
+                    const newX = e.clientX - rect.left - dragOffset.x;
+                    const newY = e.clientY - rect.top - dragOffset.y;
+                    
+                    selectedNode.x = Math.max(0, Math.min(newX, rect.width - 150));
+                    selectedNode.y = Math.max(0, Math.min(newY, rect.height - 100));
+                    
+                    updateNodePosition(selectedNode);
+                }
+            });
+
+            canvas.addEventListener('mouseup', function() {
+                isDragging = false;
+            });
+        }
+
+        function initializeNodePalette() {
+            document.querySelectorAll('.node-template').forEach(template => {
+                template.addEventListener('mousedown', function(e) {
+                    e.preventDefault();
+                    const type = this.dataset.type;
+                    createNode(type, e.clientX, e.clientY);
+                });
+            });
+        }
+
+        function createNode(type, x, y) {
+            const canvas = document.getElementById('canvas');
+            const rect = canvas.getBoundingClientRect();
+            
+            nodeCounter++;
+            const node = {
+                id: `node_${nodeCounter}`,
+                type: type,
+                name: `${type.charAt(0).toUpperCase() + type.slice(1)} ${nodeCounter}`,
+                x: x - rect.left,
+                y: y - rect.top,
+                properties: getDefaultProperties(type)
+            };
+
+            nodes.push(node);
+            renderNode(node);
+            selectNode(node);
+            updateStatus();
+        }
+
+        function getDefaultProperties(type) {
+            const properties = {
+                name: `${type.charAt(0).toUpperCase() + type.slice(1)} ${nodeCounter}`,
+                type: type
+            };
+
+            switch (type) {
+                case 'input':
+                    properties.value = 'Hello World';
+                    break;
+                case 'transform':
+                    properties.operation = 'uppercase';
+                    break;
+                case 'filter':
+                    properties.condition = 'length > 5';
+                    break;
+                case 'ai':
+                    properties.model = 'gpt-4';
+                    properties.task = 'text-generation';
+                    break;
+                case 'database':
+                    properties.operation = 'SELECT';
+                    properties.table = 'users';
+                    break;
+                case 'api':
+                    properties.method = 'GET';
+                    properties.url = 'https://api.example.com/data';
+                    break;
+            }
+
+            return properties;
+        }
+
+        function renderNode(node) {
+            const canvas = document.getElementById('canvas');
+            
+            const nodeElement = document.createElement('div');
+            nodeElement.className = 'node';
+            nodeElement.id = node.id;
+            nodeElement.style.left = node.x + 'px';
+            nodeElement.style.top = node.y + 'px';
+            
+            nodeElement.innerHTML = `
+                <div class="node-header">
+                    <div class="node-title">${node.name}</div>
+                    <div class="node-type">${node.type}</div>
+                </div>
+                <div class="node-body">
+                    <div class="node-inputs">
+                        <h4>Entradas</h4>
+                        <div class="pin input" data-node="${node.id}" data-pin="input"></div>
+                        <span class="pin-label">Data</span>
+                    </div>
+                    <div class="node-outputs">
+                        <h4>Saídas</h4>
+                        <div class="pin output" data-node="${node.id}" data-pin="output"></div>
+                        <span class="pin-label">Result</span>
+                    </div>
+                </div>
+            `;
+
+            // Event listeners para o nó
+            nodeElement.addEventListener('click', function(e) {
+                e.stopPropagation();
+                selectNode(node);
+            });
+
+            // Drag and drop
+            nodeElement.addEventListener('mousedown', function(e) {
+                if (e.target.classList.contains('pin')) return;
+                
+                e.stopPropagation();
+                startDragging(node, e);
+            });
+
+            // Conexões
+            nodeElement.querySelectorAll('.pin').forEach(pin => {
+                pin.addEventListener('mousedown', function(e) {
+                    e.stopPropagation();
+                    startConnection(this);
+                });
+                
+                pin.addEventListener('mouseup', function(e) {
+                    e.stopPropagation();
+                    endConnection(this);
+                });
+            });
+
+            canvas.appendChild(nodeElement);
+        }
+
+        function selectNode(node) {
+            deselectAll();
+            selectedNode = node;
+            const nodeElement = document.getElementById(node.id);
+            nodeElement.classList.add('selected');
+            showProperties(node);
+        }
+
+        function deselectAll() {
+            selectedNode = null;
+            document.querySelectorAll('.node').forEach(el => {
+                el.classList.remove('selected');
+            });
+            hideProperties();
+        }
+
+        function startDragging(node, event) {
+            isDragging = true;
+            const nodeElement = document.getElementById(node.id);
+            const rect = nodeElement.getBoundingClientRect();
+            
+            dragOffset.x = event.clientX - rect.left;
+            dragOffset.y = event.clientY - rect.top;
+        }
+
+        function updateNodePosition(node) {
+            const nodeElement = document.getElementById(node.id);
+            nodeElement.style.left = node.x + 'px';
+            nodeElement.style.top = node.y + 'px';
+        }
+
+        function startConnection(pin) {
+            isConnecting = true;
+            startPin = pin;
+            pin.style.background = '#ffd700';
+        }
+
+        function endConnection(endPin) {
+            if (!isConnecting || !startPin) return;
+            
+            const startNodeId = startPin.dataset.node;
+            const endNodeId = endPin.dataset.node;
+            
+            if (startNodeId !== endNodeId && 
+                startPin.dataset.pin !== endPin.dataset.pin) {
+                createConnection(startNodeId, endNodeId);
+            }
+            
+            isConnecting = false;
+            startPin.style.background = '';
+            startPin = null;
+        }
+
+        function createConnection(fromNodeId, toNodeId) {
+            connectionCounter++;
+            const connection = {
+                id: `conn_${connectionCounter}`,
+                fromNodeId: fromNodeId,
+                toNodeId: toNodeId
+            };
+
+            connections.push(connection);
+            renderConnection(connection);
+            updateStatus();
+        }
+
+        function renderConnection(connection) {
+            const canvas = document.getElementById('canvas');
+            const fromNode = document.getElementById(connection.fromNodeId);
+            const toNode = document.getElementById(connection.toNodeId);
+            
+            if (!fromNode || !toNode) return;
+            
+            const fromRect = fromNode.getBoundingClientRect();
+            const toRect = toNode.getBoundingClientRect();
+            const canvasRect = canvas.getBoundingClientRect();
+            
+            const fromX = fromRect.left + fromRect.width - canvasRect.left;
+            const fromY = fromRect.top + fromRect.height/2 - canvasRect.top;
+            const toX = toRect.left - canvasRect.left;
+            const toY = toRect.top + toRect.height/2 - canvasRect.top;
+            
+            const connectionElement = document.createElement('div');
+            connectionElement.className = 'connection';
+            connectionElement.id = connection.id;
+            connectionElement.style.left = fromX + 'px';
+            connectionElement.style.top = fromY + 'px';
+            connectionElement.style.width = (toX - fromX) + 'px';
+            
+            canvas.appendChild(connectionElement);
+        }
+
+        function showProperties(node) {
+            const content = document.getElementById('properties-content');
+            let html = `<h4>${node.name}</h4>`;
+            
+            for (const [key, value] of Object.entries(node.properties)) {
+                if (key === 'name' || key === 'type') continue;
+                
+                html += `
+                    <div class="property-group">
+                        <label>${key.charAt(0).toUpperCase() + key.slice(1)}:</label>
+                        <input type="text" value="${value}" onchange="updateProperty('${node.id}', '${key}', this.value)">
+                    </div>
+                `;
+            }
+            
+            content.innerHTML = html;
+        }
+
+        function hideProperties() {
+            const content = document.getElementById('properties-content');
+            content.innerHTML = '<p style="color: #666; font-size: 12px;">Selecione um nó para ver suas propriedades</p>';
+        }
+
+        function updateProperty(nodeId, key, value) {
+            const node = nodes.find(n => n.id === nodeId);
+            if (node) {
+                node.properties[key] = value;
+                node.name = node.properties.name || node.name;
+                
+                const nodeElement = document.getElementById(nodeId);
+                nodeElement.querySelector('.node-title').textContent = node.name;
+            }
+        }
+
+        function clearCanvas() {
+            if (confirm('Tem certeza que deseja limpar o canvas?')) {
+                nodes = [];
+                connections = [];
+                document.getElementById('canvas').innerHTML = '';
+                deselectAll();
+                updateStatus();
+            }
+        }
+
+        function saveBlueprint() {
+            saveBlueprintToBackend();
+        }
+
+        function loadBlueprint() {
+            loadBlueprintsFromBackend();
+        }
+
+        function executeBlueprint() {
+            executeBlueprintInBackend();
+        }
+
+        function closeExecutionModal() {
+            document.getElementById('executionModal').style.display = 'none';
+        }
+
+        function updateStatus() {
+            document.getElementById('node-count').textContent = `Nós: ${nodes.length}`;
+            document.getElementById('connection-count').textContent = `Conexões: ${connections.length}`;
+        }
+
+        // Fechar modal ao clicar fora
+        window.onclick = function(event) {
+            const modal = document.getElementById('executionModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Configuração da API
+        const API_BASE_URL = 'http://localhost:8081/api';
+        
+        // Função para fazer requisições à API
+        async function apiRequest(endpoint, method = 'GET', data = null) {
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                };
+                
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+                
+                const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
+                const result = await response.json();
+                
+                return result;
+            } catch (error) {
+                console.error('Erro na API:', error);
+                return { success: false, message: 'Erro de conexão com a API' };
+            }
+        }
+        
+        // Função para executar blueprint na API Java
+        async function executeBlueprintInBackend() {
+            if (nodes.length === 0) {
+                alert('Crie pelo menos um nó para executar o blueprint');
+                return;
+            }
+
+            const modal = document.getElementById('executionModal');
+            const result = document.getElementById('executionResult');
+            
+            modal.style.display = 'block';
+            result.innerHTML = 'Conectando ao backend Java...';
+            
+            try {
+                // Prepara dados do blueprint
+                const blueprintData = {
+                    name: 'Blueprint do Editor',
+                    description: 'Blueprint criado no editor visual',
+                    nodes: nodes.map(node => ({
+                        id: node.id,
+                        name: node.name,
+                        type: node.type,
+                        properties: node.properties
+                    })),
+                    connections: connections.map(conn => ({
+                        id: conn.id,
+                        fromNodeId: conn.fromNodeId,
+                        toNodeId: conn.toNodeId
+                    }))
+                };
+                
+                result.innerHTML = 'Executando blueprint no backend Java...';
+                
+                // Chama a API Java
+                const response = await apiRequest('/execute', 'POST', blueprintData);
+                
+                if (response.success) {
+                    result.innerHTML = `
+                        <h4>✅ Execução Concluída</h4>
+                        <p><strong>Mensagem:</strong> ${response.message}</p>
+                        <p><strong>Timestamp:</strong> ${response.timestamp}</p>
+                        <h5>Resultados:</h5>
+                        <pre>${JSON.stringify(response.data, null, 2)}</pre>
+                    `;
+                } else {
+                    result.innerHTML = `
+                        <h4>❌ Erro na Execução</h4>
+                        <p><strong>Erro:</strong> ${response.message}</p>
+                        <p><strong>Timestamp:</strong> ${response.timestamp}</p>
+                    `;
+                }
+                
+            } catch (error) {
+                result.innerHTML = `
+                    <h4>❌ Erro de Conexão</h4>
+                    <p><strong>Erro:</strong> ${error.message}</p>
+                    <p>Verifique se o servidor Java está rodando na porta 8081</p>
+                `;
+            }
+        }
+        
+        // Função para salvar blueprint na API
+        async function saveBlueprintToBackend() {
+            if (nodes.length === 0) {
+                alert('Crie pelo menos um nó para salvar o blueprint');
+                return;
+            }
+
+            try {
+                const blueprintData = {
+                    name: 'Blueprint do Editor',
+                    description: 'Blueprint criado no editor visual',
+                    nodes: nodes.map(node => ({
+                        id: node.id,
+                        name: node.name,
+                        type: node.type,
+                        properties: node.properties
+                    })),
+                    connections: connections.map(conn => ({
+                        id: conn.id,
+                        fromNodeId: conn.fromNodeId,
+                        toNodeId: conn.toNodeId
+                    }))
+                };
+                
+                const response = await apiRequest('/create', 'POST', blueprintData);
+                
+                if (response.success) {
+                    alert(`Blueprint salvo com sucesso!\nID: ${response.data.blueprint_id}`);
+                } else {
+                    alert(`Erro ao salvar: ${response.message}`);
+                }
+                
+            } catch (error) {
+                alert(`Erro de conexão: ${error.message}`);
+            }
+        }
+        
+        // Função para carregar blueprints da API
+        async function loadBlueprintsFromBackend() {
+            try {
+                const response = await apiRequest('/list');
+                
+                if (response.success) {
+                    const blueprintList = response.data;
+                    const blueprintIds = Object.keys(blueprintList);
+                    
+                    if (blueprintIds.length === 0) {
+                        alert('Nenhum blueprint encontrado no servidor');
+                        return;
+                    }
+                    
+                    // Cria lista de blueprints para seleção
+                    let options = 'Selecione um blueprint:\n';
+                    blueprintIds.forEach(id => {
+                        const bp = blueprintList[id];
+                        options += `${id}: ${bp.name} (${bp.nodes_count} nós, ${bp.connections_count} conexões)\n`;
+                    });
+                    
+                    const selectedId = prompt(options);
+                    if (selectedId && blueprintIds.includes(selectedId)) {
+                        await loadSpecificBlueprint(selectedId);
+                    }
+                } else {
+                    alert(`Erro ao listar: ${response.message}`);
+                }
+                
+            } catch (error) {
+                alert(`Erro de conexão: ${error.message}`);
+            }
+        }
+        
+        // Função para carregar blueprint específico
+        async function loadSpecificBlueprint(blueprintId) {
+            try {
+                const response = await apiRequest(`/blueprint/${blueprintId}`);
+                
+                if (response.success) {
+                    // Parse do blueprint JSON
+                    const blueprintJson = response.data;
+                    const blueprint = JSON.parse(blueprintJson);
+                    
+                    // Limpa canvas
+                    clearCanvas();
+                    
+                    // Carrega nós
+                    if (blueprint.nodes) {
+                        Object.values(blueprint.nodes).forEach(nodeData => {
+                            const node = {
+                                id: nodeData.id,
+                                type: nodeData.type,
+                                name: nodeData.name,
+                                x: Math.random() * 400,
+                                y: Math.random() * 300,
+                                properties: nodeData.properties || {}
+                            };
+                            nodes.push(node);
+                            renderNode(node);
+                        });
+                    }
+                    
+                    // Carrega conexões
+                    if (blueprint.connections) {
+                        Object.values(blueprint.connections).forEach(connData => {
+                            const connection = {
+                                id: connData.id,
+                                fromNodeId: connData.fromNodeId,
+                                toNodeId: connData.toNodeId
+                            };
+                            connections.push(connection);
+                            renderConnection(connection);
+                        });
+                    }
+                    
+                    updateStatus();
+                    alert(`Blueprint "${blueprint.name}" carregado com sucesso!`);
+                } else {
+                    alert(`Erro ao carregar: ${response.message}`);
+                }
+                
+            } catch (error) {
+                alert(`Erro ao carregar blueprint: ${error.message}`);
+            }
+        }
+        
+        // Função para obter estatísticas da API
+        async function getAPIStats() {
+            try {
+                const response = await apiRequest('/stats');
+                
+                if (response.success) {
+                    const stats = response.data;
+                    alert(`📊 Estatísticas da API:\n\n` +
+                          `Total de Blueprints: ${stats.total_blueprints}\n` +
+                          `Total de Requisições: ${stats.total_requests}\n` +
+                          `Status do Engine: ${stats.engine_status}\n` +
+                          `Uptime: ${new Date(stats.uptime).toLocaleString()}`);
+                } else {
+                    alert(`Erro ao obter estatísticas: ${response.message}`);
+                }
+                
+            } catch (error) {
+                alert(`Erro de conexão: ${error.message}`);
+            }
+        }
+    </script>
+</body>
+</html> 

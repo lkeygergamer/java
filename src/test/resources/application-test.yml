@@ -1,0 +1,32 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: password
+  
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: false
+
+# Configurações JWT para testes
+jwt:
+  secret: chave-secreta-para-testes-que-deve-ter-pelo-menos-256-bits
+  expiration: 3600000 # 1 hora
+
+# Configurações do servidor para testes
+server:
+  port: 0 # Porta aleatória para evitar conflitos
+  servlet:
+    context-path: /api
+
+# Logging para testes
+logging:
+  level:
+    com.exemplo: WARN
+    org.springframework.security: WARN 

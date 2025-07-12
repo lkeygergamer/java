@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  # Aplicação principal
+  blueprint-system:
+    build: .
+    container_name: blueprint-system
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - DATABASE_URL=jdbc:postgresql://postgres:5432/blueprintdb
+      - DATABASE_USERNAME=blueprint_user
+      - DATABASE_PASSWORD=blueprint_pass
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - JWT_SECRET=myfeest-blueprint-secret-key-2024-production
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./logs:/app/logs
+    restart: unless-stopped
+    networks:
+      - blueprint-network
+
+  # Banco de dados PostgreSQL
+  postgres:
+    image: postgres:15-alpine
+    container_name: blueprint-postgres
+    environment:
+      - POSTGRES_DB=blueprintdb
+      - POSTGRES_USER=blueprint_user
+      - POSTGRES_PASSWORD=blueprint_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - blueprint-network
+
+  # Cache Redis
+  redis:
+    image: redis:7-alpine
+    container_name: blueprint-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - blueprint-network
+
+  # Nginx (proxy reverso)
+  nginx:
+    image: nginx:alpine
+    container_name: blueprint-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
+    depends_on:
+      - blueprint-system
+    restart: unless-stopped
+    networks:
+      - blueprint-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  blueprint-network:
+    driver: bridge 
