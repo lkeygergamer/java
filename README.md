@@ -544,3 +544,4 @@ Este projeto representa uma aplicação Java enterprise completa e moderna, pron
 ---
 
 **Desenvolvido com ❤️ usando as melhores tecnologias de 2025** 
+
