@@ -234,7 +234,7 @@ Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalh
 
 ## 👥 Autores
 
-- **Adilson Oliveira** - *Desenvolvimento inicial* - [GitHub](https://github.com/adilson)
+- **Adilson Oliveira** - *Desenvolvimento inicial* - https://github.com/lkeygergamer/
 - **Assistente IA** - *Implementação e testes* - [GitHub](https://github.com/assistente-ia)
 
 ## 🙏 Agradecimentos
