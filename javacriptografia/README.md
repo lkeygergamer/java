@@ -182,7 +182,7 @@ javacriptografia/
 
 ## 📈 Performance
 
-### Benchmarks (Intel i7, 16GB RAM)
+### Benchmarks (Ryzen 7 5700G, 16GB RAM)
 - **Hash**: ~5ms por operação
 - **Cifragem**: ~50ms por operação
 - **Decifragem**: ~45ms por operação
