@@ -264,8 +264,8 @@ com.seuprojeto/
 ## 📞 Contato
 
 - **GitHub**: [@lkeygergamer](https://github.com/lkeygergamer)
-- **Email**: [seu-email@exemplo.com]
-- **LinkedIn**: [Seu LinkedIn]
+- **Email**: adilsonoliveira.2788@gmail.com
+- **LinkedIn**: [[Seu LinkedIn]](https://www.linkedin.com/in/aadiilson-oliveira/)
 
 ---
 
