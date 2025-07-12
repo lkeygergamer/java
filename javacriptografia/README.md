@@ -247,7 +247,7 @@ Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalh
 
 Para dúvidas, sugestões ou problemas:
 - Abra uma issue no GitHub
-- Entre em contato: adilson@example.com
+- Entre em contato: adilsonoliveira.2788@gmail.com
 
 ## 🔄 Changelog
 
