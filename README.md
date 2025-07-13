@@ -285,8 +285,18 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 <img width="1918" height="917" alt="Captura de tela 2025-07-12 164824" src="https://github.com/user-attachments/assets/f603de2f-5150-43fb-9049-4a43b3a8a3a3" />
 
 
+abaixoooo 
+
+Esse é um sistema de compilação. Não importa em que estágio ele esteja, o fato de já estar gerando e compilando um código-fonte completo e exclusivo é, por si só, algo incrível.
+Não vou disponibilizá-lo por enquanto, mas deixo esse vídeo como uma prévia do que ele é capaz.
 
 
+https://www.youtube.com/watch?v=ISK8cXyva4Y
+
+<img width="1384" height="884" alt="Captura de tela 2025-07-13 134051" src="https://github.com/user-attachments/assets/cca9da5d-48bf-4348-8469-bdcccfa9fe4b" />
 
 
+<img width="1379" height="885" alt="Captura de tela 2025-07-13 134057" src="https://github.com/user-attachments/assets/a979b1d2-36c3-4f37-b41e-1f4b12b4b361" />
+
+<img width="1380" height="892" alt="Captura de tela 2025-07-13 134108" src="https://github.com/user-attachments/assets/1d07e6e2-9098-4f95-931a-cea030a11a2f" />
 
