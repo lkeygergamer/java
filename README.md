@@ -291,7 +291,10 @@ Esse é um sistema de compilação. Não importa em que estágio ele esteja, o f
 Não vou disponibilizá-lo por enquanto, mas deixo esse vídeo como uma prévia do que ele é capaz.
 
 
-https://www.youtube.com/watch?v=ISK8cXyva4Y
+
+
+[![Assista no YouTube](https://img.youtube.com/vi/ISK8cXyva4Y/maxresdefault.jpg)](https://www.youtube.com/watch?v=ISK8cXyva4Y)
+
 
 <img width="1384" height="884" alt="Captura de tela 2025-07-13 134051" src="https://github.com/user-attachments/assets/cca9da5d-48bf-4348-8469-bdcccfa9fe4b" />
 
